@@ -22,6 +22,7 @@ public class Main {
 				loader.load(node.getUrl());
 				List<Node> automatedCalls = loader.getAutomatedCalls();
 				List<WebElement> anchors = loader.getAnchors();
+				List<WebElement> clickables = loader.getClickables();
 
 				loader.quit();
 
@@ -31,7 +32,7 @@ public class Main {
 			System.out.println(e.getMessage());
 		}
 	}
-	
+
 	private static List<Node> anchorsToNodes(List<WebElement> anchors,
 			String currentUrl) {
 		List<Node> nodes = new ArrayList<Node>(anchors.size());

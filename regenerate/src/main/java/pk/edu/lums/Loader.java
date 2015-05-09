@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openqa.selenium.By;
@@ -51,6 +50,11 @@ public class Loader {
 	public void load(String url) {
 		driver.get(url);
 		waitForLoad(driver);
+
+		try {
+			Thread.sleep(Constants.WAIT_5 * 1000);
+		} catch (InterruptedException e) {
+		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -66,8 +70,8 @@ public class Loader {
 						"return document.readyState").equals("complete");
 			}
 		};
-		WebDriverWait wait = new WebDriverWait(driver, 45);
-		wait.until(pageLoadCondition);
+
+		waitFor(pageLoadCondition, 45l);
 	}
 
 	public void quit() {
@@ -127,7 +131,22 @@ public class Loader {
 	}
 
 	public List<WebElement> getClickables() {
-		throw new NotImplementedException(
-				"This would be added in 2nd iteration");
+		List<WebElement> onMouseDown = driver.findElements(By
+				.xpath("//*[@onmousedown]"));
+		List<WebElement> onClick = driver.findElements(By
+				.xpath("//*[@onclick]"));
+		List<WebElement> onDblClick = driver.findElements(By
+				.xpath("//*[@ondblclick]"));
+
+		int size = onMouseDown == null ? 0 : onMouseDown.size();
+		size += onClick == null ? 0 : onClick.size();
+		size += onDblClick == null ? 0 : onDblClick.size();
+
+		List<WebElement> all = new ArrayList<WebElement>(size);
+		all.addAll(onMouseDown);
+		all.addAll(onClick);
+		all.addAll(onDblClick);
+
+		return all;
 	}
 }
