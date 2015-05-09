@@ -117,31 +117,16 @@ public class Loader {
 		return nodes;
 	}
 
-	// TODO get the WebElement out as well. Put the elements out directly.
 	// TODO there would be common elements in these elements and clickable.
-	public List<Node> getAnchors() {
-
-		List<WebElement> anchors = driver.findElements(By.tagName("a"));
-		String currentUrl = driver.getCurrentUrl();
-
-		List<Node> nodes = new ArrayList<Node>(anchors.size());
-
-		Long timestamp = 0l;
-		for (WebElement anchor : anchors) {
-			String url = anchor.getAttribute("href");
-			if (url != null && currentUrl != null && !url.startsWith("http")) {
-				String mid = currentUrl.endsWith("/") || url.startsWith("/") ? ""
-						: "/";
-				url = currentUrl + mid + url;
-			}
-
-			nodes.add(new Node(url, ++timestamp));
-		}
-
-		return nodes;
+	public List<WebElement> getAnchors() {
+		return driver.findElements(By.tagName("a"));
 	}
 
-	public List<Node> getClickables() {
+	public String getCurrentUrl() {
+		return driver.getCurrentUrl();
+	}
+
+	public List<WebElement> getClickables() {
 		throw new NotImplementedException(
 				"This would be added in 2nd iteration");
 	}
