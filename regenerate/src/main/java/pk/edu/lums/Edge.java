@@ -9,6 +9,11 @@ public class Edge extends DefaultEdge {
 	private WebElement element;
 	private Float similarity;
 	private EdgeType type = EdgeType.unconfirmed;
+	
+	public Edge()
+	{
+		super();
+	}
 
 	public Edge(EdgeType type, Float similarity) {
 		super();

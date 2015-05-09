@@ -6,6 +6,11 @@ public class Node {
 	private Boolean done = false;
 	private Long timestamp;
 	private String url;
+	
+	public Node()
+	{
+		super();
+	}
 
 	public Node(Boolean automated, Boolean done, Long timestamp, String url) {
 		super();
