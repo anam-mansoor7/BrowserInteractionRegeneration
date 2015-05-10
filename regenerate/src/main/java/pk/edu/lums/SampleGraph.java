@@ -30,7 +30,7 @@ public class SampleGraph {
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
 			export.export(out, graph);
-
+			out.close();
 		} catch (IOException e) {
 			System.err.println("Error: could not write spanning tree dot file");
 		}
@@ -52,12 +52,18 @@ public class SampleGraph {
 		graph.addVertex(b);
 		graph.addVertex(c);
 		graph.addVertex(d);
-
+		graph.addVertex(e);
+		graph.addVertex(f);
+		graph.addVertex(g);
+		
 		graph.addEdge(a, b);
 		graph.addEdge(b, c);
 		graph.addEdge(c, d);
 		graph.addEdge(b, d);
-
+		
+		graph.addEdge(e, d);
+		graph.addEdge(d, f);
+		
 		writeDot("graph.dot", graph);
 	}
 

@@ -3,8 +3,13 @@ digraph G {
   2 [ label="Node [automated=false, done=false, timestamp=1, url=b]" ];
   3 [ label="Node [automated=false, done=false, timestamp=1, url=c]" ];
   4 [ label="Node [automated=false, done=false, timestamp=1, url=d]" ];
+  5 [ label="Node [automated=false, done=false, timestamp=1, url=e]" ];
+  6 [ label="Node [automated=false, done=false, timestamp=1, url=f]" ];
+  7 [ label="Node [automated=false, done=false, timestamp=1, url=g]" ];
   1 -> 2 [ label="Edge [similarity=null, type=unconfirmed, element=null]" ];
   2 -> 3 [ label="Edge [similarity=null, type=unconfirmed, element=null]" ];
   3 -> 4 [ label="Edge [similarity=null, type=unconfirmed, element=null]" ];
   2 -> 4 [ label="Edge [similarity=null, type=unconfirmed, element=null]" ];
+  5 -> 4 [ label="Edge [similarity=null, type=unconfirmed, element=null]" ];
+  4 -> 6 [ label="Edge [similarity=null, type=unconfirmed, element=null]" ];
 }

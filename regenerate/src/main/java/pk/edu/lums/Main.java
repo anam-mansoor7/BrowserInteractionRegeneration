@@ -16,21 +16,30 @@ public class Main {
 			System.out.println("Total: " + recordedNodes.size());
 			for (Node node : recordedNodes) {
 				System.out.println(node.toString());
+				if (!node.getDone()) {
+					Loader loader = new Loader();
 
-				Loader loader = new Loader();
+					loader.load(node.getUrl());
+					List<Node> automatedCalls = loader.getAutomatedCalls();
+					markAndDoneAutomatedCalls(recordedNodes, automatedCalls);
 
-				loader.load(node.getUrl());
-				List<Node> automatedCalls = loader.getAutomatedCalls();
-				List<WebElement> anchors = loader.getAnchors();
-				List<WebElement> clickables = loader.getClickables();
+					List<WebElement> anchors = loader.getAnchors();
+					List<WebElement> clickables = loader.getClickables();
 
-				loader.quit();
+					loader.quit();
 
+					node.setDone(true);
+				}
 			}
 
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
+	}
+
+	private static void markAndDoneAutomatedCalls(List<Node> recordedNodes,
+			List<Node> automatedCalls) {
+
 	}
 
 	private static List<Node> anchorsToNodes(List<WebElement> anchors,
