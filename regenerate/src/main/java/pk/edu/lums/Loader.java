@@ -33,7 +33,7 @@ public class Loader {
 				+ "chromedriver.exe");
 		driver = new ChromeDriver(capabilities());
 		driver.manage().timeouts()
-				.pageLoadTimeout(Constants.WAIT_30, TimeUnit.SECONDS);
+				.pageLoadTimeout(Constants.WAIT_60, TimeUnit.SECONDS);
 	}
 
 	private DesiredCapabilities capabilities() {
