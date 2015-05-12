@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.ConsoleAppender;
@@ -68,6 +69,8 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
+		Date startTime = new Date();
+		logger.info(startTime);
 
 		Graph<Node, Edge> graph = new DefaultDirectedGraph<Node, Edge>(
 				Edge.class);
@@ -115,6 +118,11 @@ public class Main {
 		}
 
 		writeDot(Constants.BASE_USER_PATH + "mined-graph.dot", graph);
+
+		Date endTime = new Date();
+		long diff = endTime.getTime() - startTime.getTime();
+		long diffMinutes = diff / (60 * 1000) % 60;
+		logger.info("Total Time (mins): " + diffMinutes);
 	}
 
 	private static void markAndDoneAutomatedCalls(Integer currentNodeIndex,
