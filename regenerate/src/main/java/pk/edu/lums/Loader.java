@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openqa.selenium.By;
@@ -25,6 +26,8 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class Loader {
+	private static final int RETRY_COUNT = 3;
+	private static Logger logger = Logger.getLogger(Loader.class);
 	private WebDriver driver;
 
 	public Loader() {
@@ -33,7 +36,7 @@ public class Loader {
 				+ "chromedriver.exe");
 		driver = new ChromeDriver(capabilities());
 		driver.manage().timeouts()
-				.pageLoadTimeout(Constants.WAIT_60, TimeUnit.SECONDS);
+				.pageLoadTimeout(Constants.WAIT_PAGE_LOAD, TimeUnit.SECONDS);
 	}
 
 	private DesiredCapabilities capabilities() {
@@ -47,7 +50,26 @@ public class Loader {
 		return capability;
 	}
 
-	public void load(String url) {
+	public void load(String url) throws Exception {
+		int i = 1;
+		Exception exp = null;
+		for (; i <= RETRY_COUNT; i++) {
+			try {
+				loadInternal(url);
+				break;
+			} catch (Exception e) {
+				exp = e;
+				logger.info("TRY:" + RETRY_COUNT + " EXP:" + e.getMessage());
+			}
+		}
+
+		if (i == RETRY_COUNT) {
+			throw exp;
+		}
+
+	}
+
+	private void loadInternal(String url) {
 		driver.get(url);
 		waitForLoad(driver);
 
@@ -115,7 +137,7 @@ public class Loader {
 			}
 
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			logger.info(e.getMessage());
 			e.printStackTrace();
 		}
 		return nodes;

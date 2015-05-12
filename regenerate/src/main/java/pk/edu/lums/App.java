@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -21,7 +22,8 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 public class App {
 	private static final int WAIT_30 = 30;
-
+	private static Logger logger = Logger.getLogger(Main.class);
+	
 	public static void main(String[] args) {
 		System.setProperty("webdriver.chrome.driver",
 				"E:\\Documents\\LUMS\\2015-Spring-Network Security\\Project\\chromedriver.exe");
@@ -59,8 +61,8 @@ public class App {
 		// printLogs(logEntries5);
 		// printLogs(logEntries6);
 
-		System.out.println("==============================================");
-		System.out.println("Hello World!");
+		logger.info("==============================================");
+		logger.info("Hello World!");
 		driver.close();
 		driver.quit();
 	}
@@ -83,16 +85,16 @@ public class App {
 	}
 
 	private static void printLogs(LogEntries logEntries) {
-		System.out.println("==============================================");
+		logger.info("==============================================");
 
 		for (LogEntry logEntry : logEntries) {
-			System.out.println(logEntry.toString());
+			logger.info(logEntry.toString());
 		}
 	}
 
 	private static void printLogReceived(LogEntries logEntries)
 			throws JsonParseException, JsonMappingException, IOException {
-		System.out.println("==============================================");
+		logger.info("==============================================");
 
 		for (LogEntry logEntry : logEntries) {
 			ObjectMapper mapper = new ObjectMapper();
@@ -103,7 +105,7 @@ public class App {
 				System.out.print(readValue.get("message").get("params")
 						.get("timestamp").asText());
 				System.out.print(" ");
-				System.out.println(readValue.get("message").get("params")
+				logger.info(readValue.get("message").get("params")
 						.get("response").get("url").asText());
 			}
 		}
@@ -111,7 +113,7 @@ public class App {
 
 	private static void printLogSent(LogEntries logEntries)
 			throws JsonParseException, JsonMappingException, IOException {
-		System.out.println("==============================================");
+		logger.info("==============================================");
 
 		for (LogEntry logEntry : logEntries) {
 			ObjectMapper mapper = new ObjectMapper();
@@ -122,7 +124,7 @@ public class App {
 				System.out.print(readValue.get("message").get("params")
 						.get("timestamp").asText());
 				System.out.print(" ");
-				System.out.println(readValue.get("message").get("params")
+				logger.info(readValue.get("message").get("params")
 						.get("request").get("url").asText());
 			}
 		}

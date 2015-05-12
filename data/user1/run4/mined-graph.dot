@@ -1,0 +1,8 @@
+digraph G {
+  1 [ label="Node [automated=false, done=true, timestamp=1, url=https://ssl.gstatic.com/docs/common/cleardot.gif?zx=32kh32x08h7]" ];
+  2 [ label="Node [automated=false, done=true, timestamp=2, url=https://api.rescuetime.com/messages]" ];
+  3 [ label="Node [automated=false, done=true, timestamp=3, url=https://www.google.com.pk/search?q=lums&oq=lums&aqs=chrome.0.69i59l2j69i60j69i65l3.1382j0j1&sourceid=chrome&es_sm=93&ie=UTF-8]" ];
+  4 [ label="Node [automated=false, done=true, timestamp=4, url=https://www.google.com.pk/maps/vt/data=RfCSdfNZ0LFPrHSm0ublXdzhdrDFhtmHhN1u-gM,lXdSpsQTRw7jp39MrrR-sxbZytKxoVKR5E_L1IyGkx3zujFXDeZcpcf1m7AYwKpCgnEuXLUvmjbxzUiYtZOE6dk_isQoKyzZAY3ufo1JbQZd-avD8QejoEhEP-7hcm1qCTvL]" ];
+  5 [ label="Node [automated=false, done=true, timestamp=6, url=https://www.google.com.pk/xjs/_/js/k=xjs.s.en.qNY_UaOAEcE.O/m=sy25,abd,aspn,sy73,sy72,sy71,sy74,async,sy174,sy353,sy354,sy11,sy37,sy355,sy369,sy9,sy370,dvl,erh,sy75,foot,fpe,sy162,hv,idck,sy129,sy133,imap,ipv6,lc,sy136,lu,sy375,m,sf,sy170,sy32,sy115,sy204,sy205,sy217,sy180,sy220,sy179,sy112,sy116,sy203,sy218,sy221,sy223,sy216,spch,vm,sy51,sy52,sy128,em14,vs,sy43,sy44,sy46,sy48,sy45,sy49,sy47,sy76,sy79,sy77,tnv,sy114,sy181,sy178,sy184,sy182,sy183,sy185,sy337,sy34,sy186,sy39,sy130,sy338,sy35,sy139,sy210,sy339,lor,sy176,sy340,lorl,sy226,nqsb,lrdc,me,sy80,sy38,sy81,sy118,sy167,kx,sy163,sy280,sy319,sy164,sy322,kptm,oh/am=pEoI8bcYhEFSUE0IdQ/rt=j/d=0/t=zcms/rs=ACT90oEBDhC8wkXF2Zi2shswfKDR9AYZUQ]" ];
+  6 [ label="Node [automated=false, done=true, timestamp=7, url=http://www.lums.edu.pk/]" ];
+}

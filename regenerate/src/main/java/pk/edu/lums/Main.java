@@ -3,11 +3,17 @@ package pk.edu.lums;
 import info.debatty.java.stringsimilarity.Jaccard;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.jgrapht.Graph;
 import org.jgrapht.ext.DOTExporter;
 import org.jgrapht.ext.EdgeNameProvider;
@@ -17,23 +23,67 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.openqa.selenium.WebElement;
 
 public class Main {
+	private static Logger logger = Logger.getLogger(Main.class);
+
+	static {
+		System.out.println("In static block");
+		String runPath = Constants.BASE_PATH + "user1\\run";
+		Integer run = getRunNumber(runPath);
+		Constants.BASE_USER_PATH = runPath + run + "\\";
+		System.out.println(Constants.BASE_USER_PATH);
+		File f = new File(Constants.BASE_USER_PATH);
+		f.mkdirs();
+
+		ConsoleAppender console = new ConsoleAppender(); // create appender
+		// configure the appender
+		String PATTERN = "%d [%p|%c|%C{1}] %m%n";
+		console.setLayout(new PatternLayout(PATTERN));
+		console.setThreshold(Level.FATAL);
+		console.activateOptions();
+		// add appender to any Logger (here is root)
+		Logger.getRootLogger().addAppender(console);
+
+		FileAppender fa = new FileAppender();
+		fa.setName("FileLogger");
+		fa.setFile(Constants.BASE_USER_PATH + "mylog.log");
+		fa.setLayout(new PatternLayout("%d %-5p [%c{1}] %m%n"));
+		fa.setThreshold(Level.DEBUG);
+		fa.setAppend(true);
+		fa.activateOptions();
+
+		// add appender to any Logger (here is root)
+		Logger.getRootLogger().addAppender(fa);
+
+	}
+
+	private static Integer getRunNumber(String runPath) {
+		int run = 1;
+		for (;; run++) {
+			File f = new File(runPath + run);
+			if (!f.exists()) {
+				break;
+			}
+		}
+		return run;
+	}
+
 	public static void main(String[] args) {
 
 		Graph<Node, Edge> graph = new DefaultDirectedGraph<Node, Edge>(
 				Edge.class);
-		RecordedDataReader r = new RecordedDataReader(Constants.BASE_PATH
-				+ "user1\\recorded-trace.txt");
+		RecordedDataReader recodedData = new RecordedDataReader(
+				Constants.BASE_PATH + "user1\\recorded-trace.txt");
 		try {
-			List<Node> recordedNodes = r.read();
+			List<Node> recordedNodes = recodedData.read();
 
-			System.out.println("Total: " + recordedNodes.size());
+			logger.info("Total: " + recordedNodes.size());
 
 			for (int currentNodeIndex = 0; currentNodeIndex < recordedNodes
 					.size(); currentNodeIndex++) {
 
 				Node currentNode = recordedNodes.get(currentNodeIndex);
 
-				System.out.println(currentNode.toString());
+				logger.info(currentNode.toString());
 				if (!currentNode.getDone()) {
 
 					Loader loader = new Loader();
@@ -53,7 +103,7 @@ public class Main {
 						currentNode.setDone(true);
 
 					} catch (Exception e) {
-						System.out.println(e.getMessage());
+						logger.info(e.getMessage());
 					} finally {
 						loader.quit();
 					}
@@ -61,10 +111,10 @@ public class Main {
 			}
 
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			logger.info(e.getMessage());
 		}
 
-		writeDot("mined-graph.dot", graph);
+		writeDot(Constants.BASE_USER_PATH + "mined-graph.dot", graph);
 	}
 
 	private static void markAndDoneAutomatedCalls(Integer currentNodeIndex,
