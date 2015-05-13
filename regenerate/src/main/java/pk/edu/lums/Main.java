@@ -25,6 +25,7 @@ import org.openqa.selenium.WebElement;
 
 public class Main {
 	private static Logger logger = Logger.getLogger(Main.class);
+	private static double maxSim = 0d;
 
 	static {
 		System.out.println("In static block");
@@ -48,7 +49,7 @@ public class Main {
 		fa.setName("FileLogger");
 		fa.setFile(Constants.BASE_USER_RUN_PATH + "mylog.log");
 		fa.setLayout(new PatternLayout("%d %-5p [%c{1}] %m%n"));
-		fa.setThreshold(Level.DEBUG);
+		fa.setThreshold(Level.INFO);
 		fa.setAppend(true);
 		fa.activateOptions();
 
@@ -94,7 +95,9 @@ public class Main {
 
 						loader.load(currentNode.getUrl());
 
-						graph.addVertex(currentNode);
+						if (!graph.containsVertex(currentNode)) {
+							graph.addVertex(currentNode);
+						}
 
 						List<Node> automatedCalls = loader.getAutomatedCalls();
 						markAndDoneAutomatedCalls(currentNodeIndex,
@@ -122,6 +125,8 @@ public class Main {
 		}
 
 		writeDot(Constants.BASE_USER_RUN_PATH + "mined-graph.dot", graph);
+
+		logger.info("Max Similarity: " + maxSim);
 
 		Date endTime = new Date();
 		long diff = endTime.getTime() - startTime.getTime();
@@ -159,6 +164,7 @@ public class Main {
 
 			for (int nextNodeIndex = currentNodeIndex + 1; nextNodeIndex < Constants.FORWARD_REQUESTS_TO_CHECK
 					&& nextNodeIndex < recordedNodes.size(); nextNodeIndex++) {
+
 				Node currentNode = recordedNodes.get(nextNodeIndex);
 				String currentNodeUrl = currentNode.getUrl();
 
@@ -167,16 +173,18 @@ public class Main {
 				}
 
 				float similarity = checkEquality ? 1f : Double.valueOf(
-						new Jaccard().similarity(currentUrl, anchorUrl))
-						.floatValue();
+						similarity(currentNodeUrl, anchorUrl)).floatValue();
 
 				boolean stringEqual = checkEquality
-						&& currentUrl.equals(anchorUrl);
+						&& currentNodeUrl.equals(anchorUrl);
 				boolean stringSimilar = !checkEquality
 						&& similarity > Constants.REQUESTS_SIMILARITY;
 
 				if (stringEqual || stringSimilar) {
 					Edge edge = new Edge(anchor, similarity, EdgeType.confirmed);
+					if (!graph.containsVertex(currentNode)) {
+						graph.addVertex(currentNode);
+					}
 					graph.addEdge(actualCurrentNode, currentNode, edge);
 					break;
 				}
@@ -184,6 +192,16 @@ public class Main {
 			}
 		}
 
+	}
+
+	private static double similarity(String currentUrl, String anchorUrl) {
+		double sim = new Jaccard().similarity(currentUrl, anchorUrl);
+		if (sim < 99.9 && sim > maxSim) {
+			maxSim = sim;
+			logger.info("Sim Change: [" + sim + "] currentUrl=[" + currentUrl
+					+ "] anchorUrl=[" + anchorUrl + "]");
+		}
+		return sim;
 	}
 
 	private static void markAndDoneAutomatedCalls(Integer currentNodeIndex,
@@ -209,7 +227,8 @@ public class Main {
 			Node currentNode = recordedNodes.get(nextNodeIndex);
 			String currentUrl = currentNode.getUrl();
 
-			if (currentUrl == null || "".equals(currentUrl.trim())) {
+			if (currentNode.getDone() && currentUrl == null
+					|| "".equals(currentUrl.trim())) {
 				continue;
 			}
 
@@ -221,7 +240,7 @@ public class Main {
 				boolean stringEqual = checkEquality
 						&& currentUrl.equals(autoUrl);
 				boolean stringSimilar = !checkEquality
-						&& new Jaccard().similarity(currentUrl, autoUrl) > Constants.REQUESTS_SIMILARITY;
+						&& similarity(currentUrl, autoUrl) > Constants.REQUESTS_SIMILARITY;
 
 				if (stringEqual || stringSimilar) {
 					currentNode.setAutomated(markAutomated);
