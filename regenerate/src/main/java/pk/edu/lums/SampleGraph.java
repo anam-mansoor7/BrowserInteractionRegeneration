@@ -55,16 +55,17 @@ public class SampleGraph {
 		graph.addVertex(e);
 		graph.addVertex(f);
 		graph.addVertex(g);
-		
+
 		graph.addEdge(a, b);
 		graph.addEdge(b, c);
 		graph.addEdge(c, d);
 		graph.addEdge(b, d);
-		
-		graph.addEdge(e, d);
+
+		graph.addEdge(e, d, new Edge(null, 0.1f, EdgeType.confirmed));
 		graph.addEdge(d, f);
-		
+
 		writeDot("graph.dot", graph);
+		System.out.println("Completed!");
 	}
 
 }

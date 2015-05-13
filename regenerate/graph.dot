@@ -10,6 +10,6 @@ digraph G {
   2 -> 3 [ label="Edge [similarity=null, type=unconfirmed, element=null]" ];
   3 -> 4 [ label="Edge [similarity=null, type=unconfirmed, element=null]" ];
   2 -> 4 [ label="Edge [similarity=null, type=unconfirmed, element=null]" ];
-  5 -> 4 [ label="Edge [similarity=null, type=unconfirmed, element=null]" ];
+  5 -> 4 [ label="Edge [similarity=0.1, type=confirmed, element=null]" ];
   4 -> 6 [ label="Edge [similarity=null, type=unconfirmed, element=null]" ];
 }

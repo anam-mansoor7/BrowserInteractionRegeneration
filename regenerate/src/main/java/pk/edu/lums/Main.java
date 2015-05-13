@@ -28,11 +28,11 @@ public class Main {
 
 	static {
 		System.out.println("In static block");
-		String runPath = Constants.BASE_PATH + "user1\\run";
+		String runPath = Constants.BASE_USER_PATH + "run";
 		Integer run = getRunNumber(runPath);
-		Constants.BASE_USER_PATH = runPath + run + "\\";
-		System.out.println(Constants.BASE_USER_PATH);
-		File f = new File(Constants.BASE_USER_PATH);
+		Constants.BASE_USER_RUN_PATH = runPath + run + "\\";
+		System.out.println(Constants.BASE_USER_RUN_PATH);
+		File f = new File(Constants.BASE_USER_RUN_PATH);
 		f.mkdirs();
 
 		ConsoleAppender console = new ConsoleAppender(); // create appender
@@ -46,7 +46,7 @@ public class Main {
 
 		FileAppender fa = new FileAppender();
 		fa.setName("FileLogger");
-		fa.setFile(Constants.BASE_USER_PATH + "mylog.log");
+		fa.setFile(Constants.BASE_USER_RUN_PATH + "mylog.log");
 		fa.setLayout(new PatternLayout("%d %-5p [%c{1}] %m%n"));
 		fa.setThreshold(Level.DEBUG);
 		fa.setAppend(true);
@@ -75,7 +75,7 @@ public class Main {
 		Graph<Node, Edge> graph = new DefaultDirectedGraph<Node, Edge>(
 				Edge.class);
 		RecordedDataReader recodedData = new RecordedDataReader(
-				Constants.BASE_PATH + "user1\\recorded-trace.txt");
+				Constants.BASE_USER_PATH + "recorded-trace.txt");
 		try {
 			List<Node> recordedNodes = recodedData.read();
 
@@ -101,6 +101,10 @@ public class Main {
 								recordedNodes, automatedCalls);
 
 						List<WebElement> anchors = loader.getAnchors();
+						addEdgesForAnchors(currentNodeIndex,
+								loader.getCurrentUrl(), graph, recordedNodes,
+								anchors);
+
 						List<WebElement> clickables = loader.getClickables();
 
 						currentNode.setDone(true);
@@ -117,12 +121,69 @@ public class Main {
 			logger.info(e.getMessage());
 		}
 
-		writeDot(Constants.BASE_USER_PATH + "mined-graph.dot", graph);
+		writeDot(Constants.BASE_USER_RUN_PATH + "mined-graph.dot", graph);
 
 		Date endTime = new Date();
 		long diff = endTime.getTime() - startTime.getTime();
 		long diffMinutes = diff / (60 * 1000) % 60;
 		logger.info("Total Time (mins): " + diffMinutes);
+	}
+
+	private static void addEdgesForAnchors(int currentNodeIndex,
+			String currentUrl, Graph<Node, Edge> graph,
+			List<Node> recordedNodes, List<WebElement> anchors) {
+
+		addEdgesForAnchors(currentNodeIndex, currentUrl, true, graph,
+				recordedNodes, anchors);
+		addEdgesForAnchors(currentNodeIndex, currentUrl, false, graph,
+				recordedNodes, anchors);
+
+	}
+
+	private static void addEdgesForAnchors(Integer currentNodeIndex,
+			String currentUrl, boolean checkEquality, Graph<Node, Edge> graph,
+			List<Node> recordedNodes, List<WebElement> anchors) {
+
+		if (recordedNodes == null || anchors == null) {
+			return;
+		}
+
+		Node actualCurrentNode = recordedNodes.get(currentNodeIndex);
+
+		for (WebElement anchor : anchors) {
+			String anchorUrl = anchorToURL(currentUrl, anchor);
+
+			if (anchorUrl == null || "".equals(anchorUrl.trim())) {
+				continue;
+			}
+
+			for (int nextNodeIndex = currentNodeIndex + 1; nextNodeIndex < Constants.FORWARD_REQUESTS_TO_CHECK
+					&& nextNodeIndex < recordedNodes.size(); nextNodeIndex++) {
+				Node currentNode = recordedNodes.get(nextNodeIndex);
+				String currentNodeUrl = currentNode.getUrl();
+
+				if (currentNodeUrl == null || "".equals(currentNodeUrl.trim())) {
+					continue;
+				}
+
+				float similarity = checkEquality ? 1f : Double.valueOf(
+						new Jaccard().similarity(currentUrl, anchorUrl))
+						.floatValue();
+
+				boolean stringEqual = checkEquality
+						&& currentUrl.equals(anchorUrl);
+				boolean stringSimilar = !checkEquality
+						&& similarity > Constants.REQUESTS_SIMILARITY;
+
+				if (stringEqual || stringSimilar) {
+					Edge edge = new Edge(anchor, similarity, EdgeType.confirmed);
+					graph.addEdge(actualCurrentNode, currentNode, edge);
+					break;
+				}
+
+			}
+		}
+
 	}
 
 	private static void markAndDoneAutomatedCalls(Integer currentNodeIndex,
@@ -142,7 +203,7 @@ public class Main {
 			return;
 		}
 
-		for (int nextNodeIndex = currentNodeIndex + 1; nextNodeIndex < Constants.REQUESTS_TO_CHECK
+		for (int nextNodeIndex = currentNodeIndex + 1; nextNodeIndex < Constants.AUTO_REQUESTS_TO_CHECK
 				&& nextNodeIndex < recordedNodes.size(); nextNodeIndex++) {
 
 			Node currentNode = recordedNodes.get(nextNodeIndex);
@@ -177,16 +238,21 @@ public class Main {
 
 		Long timestamp = 0l;
 		for (WebElement anchor : anchors) {
-			String url = anchor.getAttribute("href");
-			if (url != null && currentUrl != null && !url.startsWith("http")) {
-				String mid = currentUrl.endsWith("/") || url.startsWith("/") ? ""
-						: "/";
-				url = currentUrl + mid + url;
-			}
+			String url = anchorToURL(currentUrl, anchor);
 
 			nodes.add(new Node(url, ++timestamp));
 		}
 		return nodes;
+	}
+
+	private static String anchorToURL(String currentUrl, WebElement anchor) {
+		String url = anchor.getAttribute("href");
+		if (url != null && currentUrl != null && !url.startsWith("http")) {
+			String mid = currentUrl.endsWith("/") || url.startsWith("/") ? ""
+					: "/";
+			url = currentUrl + mid + url;
+		}
+		return url;
 	}
 
 	public static void writeDot(String filename, Graph<Node, Edge> graph) {
