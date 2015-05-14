@@ -162,7 +162,8 @@ public class Main {
 				continue;
 			}
 
-			for (int nextNodeIndex = currentNodeIndex + 1; nextNodeIndex < Constants.FORWARD_REQUESTS_TO_CHECK
+			// TODO this check is wrong
+			for (int nextNodeIndex = currentNodeIndex + 1; nextNodeIndex < (currentNodeIndex + Constants.FORWARD_REQUESTS_TO_CHECK)
 					&& nextNodeIndex < recordedNodes.size(); nextNodeIndex++) {
 
 				Node currentNode = recordedNodes.get(nextNodeIndex);
@@ -221,7 +222,7 @@ public class Main {
 			return;
 		}
 
-		for (int nextNodeIndex = currentNodeIndex + 1; nextNodeIndex < Constants.AUTO_REQUESTS_TO_CHECK
+		for (int nextNodeIndex = currentNodeIndex + 1; nextNodeIndex < (currentNodeIndex + Constants.AUTO_REQUESTS_TO_CHECK)
 				&& nextNodeIndex < recordedNodes.size(); nextNodeIndex++) {
 
 			Node currentNode = recordedNodes.get(nextNodeIndex);
